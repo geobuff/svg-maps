@@ -1,6 +1,6 @@
-# geobuff/maps
-[![npm](https://img.shields.io/npm/v/@geobuff/maps)](https://www.npmjs.com/package/@geobuff/maps)
-[![David](https://img.shields.io/david/geobuff/maps)](https://david-dm.org/geobuff/maps)
+# geobuff/svg-maps
+[![npm](https://img.shields.io/npm/v/@geobuff/svg-maps)](https://www.npmjs.com/package/@geobuff/svg-maps)
+[![David](https://img.shields.io/david/geobuff/svg-maps)](https://david-dm.org/geobuff/svg-maps)
 
 A collection of free-to-use maps.
 
