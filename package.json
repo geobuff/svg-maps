@@ -1,0 +1,20 @@
+{
+    "name": "@geobuff/svg-maps",
+    "version": "0.1.0",
+    "description": "Maps used by the team at geobuff.com.",
+    "license": "MIT",
+    "repository": "geobuff/svg-maps",
+    "main": "index.js",
+    "keywords": [
+        "geobuff",
+        "maps"
+    ],
+    "scripts": {
+        "build": "node build.js",
+        "test": "mocha"
+    },
+    "devDependencies": {
+        "mocha": "^8.3.0",
+        "svgson": "^3.1.0"
+    }
+}
