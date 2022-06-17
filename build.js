@@ -57,11 +57,14 @@ build.mapSVG = (json) => {
 		label: json.attributes['aria-label'],
 		viewBox: json.attributes.viewBox,
 		paths: json.children
-			.filter(x => x.name === 'path')
+			.filter(x => x.name === 'path' || x.name === 'circle')
 			.map(x => ({
 				name: x.attributes.name,
 				id: x.attributes.id,
 				d: x.attributes.d,
+				cx: x.attributes.cx,
+				cy: x.attributes.cy,
+				r: x.attributes.r
 			}))
 	};
 };
