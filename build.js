@@ -107,6 +107,9 @@ const getChildProps = (x) => {
 			}
 
 			return {
+				type: x.name,
+				name: x.attributes.name,
+				id: x.attributes.id,
 				clipPathId: x.children[0].attributes.id,
 				width: x.children[0].children[0].attributes.width,
 				height: x.children[0].children[0].attributes.height,
