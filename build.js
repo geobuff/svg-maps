@@ -5,6 +5,8 @@ const svgson = require('svgson');
 const jsFile = "./index.js";
 const svgFolder = "./svgs";
 
+const allowedTypes = ["path", "polygon", "circle", "rect", "image", "defs"];
+
 let build = {};
 
 build.checkIndex = () => {
@@ -52,22 +54,76 @@ build.appendToFile = (js) => {
 	});
 }
 
+const getChildProps = (x) => {
+	switch (x.name) {
+		case "path":
+			return {
+				type: x.name,
+				name: x.attributes.name,
+				id: x.attributes.id,
+				d: x.attributes.d,
+			};
+		case "polygon":
+			return {
+				type: x.name,
+				name: x.attributes.name,
+				id: x.attributes.id,
+				points: x.attributes.points,
+			}
+		case "rect":
+			return {
+				type: x.name,
+				name: x.attributes.name,
+				id: x.attributes.id,
+				x: x.attributes.x,
+				y: x.attributes.y,
+				width: x.attributes.width,
+				height: x.attributes.height,
+				transform: x.attributes.transform,
+			}
+		case "circle":
+			return {
+				type: x.name,
+				name: x.attributes.name,
+				id: x.attributes.id,
+				cx: x.attributes.cx,
+				cy: x.attributes.cy,
+				r: x.attributes.r,
+			}
+		case "image":
+			return {
+				type: x.name,
+				name: x.attributes.name,
+				id: x.attributes.id,
+				width: x.attributes.width,
+				height: x.attributes.height,
+				transform: x.attributes.transform,
+				xlinkHref: x.attributes["xlink:href"],
+				clipPath: x.attributes["clip-path"],
+			}
+		case "defs":
+			if(x.children.length !== 1 || x.children[0].children.length !== 1) {
+				throw Error("Invalid format for <defs> element.");
+			}
+
+			return {
+				clipPathId: x.children[0].attributes.id,
+				width: x.children[0].children[0].attributes.width,
+				height: x.children[0].children[0].attributes.height,
+			}
+		default:
+			throw Error("Invalid SVG child type.");
+		}
+}
+
 build.mapSVG = (json) => {
 	return {
 		label: json.attributes['aria-label'],
 		viewBox: json.attributes.viewBox,
 		elements: json.children
-			.filter(x => x.name === 'path' || x.name === 'circle')
-			.map(x => ({
-				type: x.name,
-				name: x.attributes.name,
-				id: x.attributes.id,
-				d: x.attributes.d,
-				cx: x.attributes.cx,
-				cy: x.attributes.cy,
-				r: x.attributes.r
-			}))
-	};
+			.filter(x => allowedTypes.includes(x.name))
+			.map(x => getChildProps(x))
+		}
 };
 
 build.getClassName = (file) => {
