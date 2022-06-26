@@ -134,6 +134,7 @@ const getChildProps = (x) => {
 			});
 			break;
 		case "g":
+			const children = [];
 			for (var i=0; i < x.children.length; i++) {
 				const child = x.children[i];
 				child.attributes = {
@@ -141,8 +142,9 @@ const getChildProps = (x) => {
 					id: x.attributes.id,
 					name: x.attributes.name,
 				}
-				result.push(getChildProps(child));
+				children.push(getChildProps(child));
 			}
+			result.push(...children.flat(1));
 			break;
 		default:
 			throw Error(`Invalid SVG child type '${x.name}'.`);
