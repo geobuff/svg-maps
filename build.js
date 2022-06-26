@@ -5,7 +5,7 @@ const svgson = require('svgson');
 const jsFile = "./index.js";
 const svgFolder = "./svgs";
 
-const allowedTypes = ["path", "polygon", "circle", "rect", "image", "defs"];
+const allowedTypes = ["path", "polygon", "polyline", "circle", "rect", "image", "defs", "line", "g"];
 
 let build = {};
 
@@ -55,23 +55,27 @@ build.appendToFile = (js) => {
 }
 
 const getChildProps = (x) => {
+	const result = [];
 	switch (x.name) {
 		case "path":
-			return {
+			result.push({
 				type: x.name,
 				name: x.attributes.name,
 				id: x.attributes.id,
 				d: x.attributes.d,
-			};
+			});
+			break;
 		case "polygon":
-			return {
+		case "polyline":
+			result.push({
 				type: x.name,
 				name: x.attributes.name,
 				id: x.attributes.id,
 				points: x.attributes.points,
-			}
+			});
+			break;
 		case "rect":
-			return {
+			result.push({
 				type: x.name,
 				name: x.attributes.name,
 				id: x.attributes.id,
@@ -80,18 +84,31 @@ const getChildProps = (x) => {
 				width: x.attributes.width,
 				height: x.attributes.height,
 				transform: x.attributes.transform,
-			}
+			});
+			break;
 		case "circle":
-			return {
+			result.push({
 				type: x.name,
 				name: x.attributes.name,
 				id: x.attributes.id,
 				cx: x.attributes.cx,
 				cy: x.attributes.cy,
 				r: x.attributes.r,
-			}
+			});
+			break;
+		case "line":
+			result.push({
+				type: x.name,
+				name: x.attributes.name,
+				id: x.attributes.id,
+				x1: x.attributes.x1,
+				y1: x.attributes.y1,
+				x2: x.attributes.x2,
+				y2: x.attributes.y2,
+			});
+			break;
 		case "image":
-			return {
+			result.push({
 				type: x.name,
 				name: x.attributes.name,
 				id: x.attributes.id,
@@ -100,23 +117,38 @@ const getChildProps = (x) => {
 				transform: x.attributes.transform,
 				xlinkHref: x.attributes["xlink:href"],
 				clipPath: x.attributes["clip-path"],
-			}
+			});
+			break;
 		case "defs":
 			if(x.children.length !== 1 || x.children[0].children.length !== 1) {
 				throw Error("Invalid format for <defs> element.");
 			}
 
-			return {
+			result.push({
 				type: x.name,
 				name: x.attributes.name,
 				id: x.attributes.id,
 				clipPathId: x.children[0].attributes.id,
 				width: x.children[0].children[0].attributes.width,
 				height: x.children[0].children[0].attributes.height,
+			});
+			break;
+		case "g":
+			for (var i=0; i < x.children.length; i++) {
+				const child = x.children[i];
+				child.attributes = {
+					...child.attributes,
+					id: x.attributes.id,
+					name: x.attributes.name,
+				}
+				result.push(getChildProps(child));
 			}
+			break;
 		default:
 			throw Error("Invalid SVG child type.");
 		}
+
+	return result;
 }
 
 build.mapSVG = (json) => {
