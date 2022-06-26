@@ -145,20 +145,24 @@ const getChildProps = (x) => {
 			}
 			break;
 		default:
-			throw Error("Invalid SVG child type.");
+			throw Error(`Invalid SVG child type '${x.name}'.`);
 		}
 
 	return result;
 }
 
 build.mapSVG = (json) => {
+	let elements = [];
+	const filtered = json.children.filter(x => allowedTypes.includes(x.name));
+	for (var i=0; i < filtered.length; i++) {
+		elements.push(...getChildProps(filtered[i]));
+	}
+
 	return {
 		label: json.attributes['aria-label'],
 		viewBox: json.attributes.viewBox,
-		elements: json.children
-			.filter(x => allowedTypes.includes(x.name))
-			.map(x => getChildProps(x))
-		}
+		elements: elements,
+	};
 };
 
 build.getClassName = (file) => {
